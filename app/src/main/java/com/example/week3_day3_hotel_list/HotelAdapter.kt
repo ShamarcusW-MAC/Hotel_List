@@ -15,9 +15,8 @@ class HotelAdapter(val guestList:List<Guest>): BaseAdapter() {
         val view = LayoutInflater.from(parent?.context)
             .inflate(R.layout.list_item_layout, parent, false)
 
-        view.findViewById<TextView>(R.id.number_textview).text = guestList[position].roomNumber.toString()
-        view.findViewById<TextView>(R.id.name_textview).text = guestList[position].name
-        view.findViewById<TextView>(R.id.price_textview).text = guestList[position].price.toString()
+        view.findViewById<TextView>(R.id.guest_info_textView).text = guestList[position].name
+//        view.findViewById<TextView>(R.id.price_textview).text = guestList[position].price.toString()
 
         return view
     }
