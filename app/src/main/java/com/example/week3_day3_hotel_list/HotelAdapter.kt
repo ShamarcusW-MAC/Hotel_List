@@ -3,25 +3,31 @@ package com.example.week3_day3_hotel_list
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.TextView
+import android.widget.*
 
-class HotelAdapter(val guestList:List<Guest>): BaseAdapter() {
+class HotelAdapter(private val guestList:List<Guest>, private val delegate: GuestAdapterDelegate): BaseAdapter() {
 
+
+    interface GuestAdapterDelegate{
+        fun deleteBooking(guestPosition: Int)
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-
 
         val view = LayoutInflater.from(parent?.context)
             .inflate(R.layout.list_item_layout, parent, false)
 
         view.findViewById<TextView>(R.id.guest_info_textView).text = guestList[position].name
-//        view.findViewById<TextView>(R.id.price_textview).text = guestList[position].price.toString()
 
+        view.findViewById<ImageView>(R.id.deleteUser_imageView).setOnClickListener{ _ ->
+
+            delegate.deleteBooking(position)
+
+        }
         return view
     }
 
-    override fun getItem(position: Int): Any {
+    override fun getItem(position: Int): Guest {
         return guestList[position]
     }
 
@@ -33,5 +39,6 @@ class HotelAdapter(val guestList:List<Guest>): BaseAdapter() {
     override fun getCount(): Int {
         return guestList.size
     }
+
 
 }

@@ -13,15 +13,21 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStreamReader
 
-class DeleteActivity : AppCompatActivity() {
-
-
+class DeleteActivity : AppCompatActivity(), HotelAdapter.GuestAdapterDelegate {
 
     private val fileName = "HotelVip.txt"
 
     private val filePath = "MyExternalPath"
 
-    private var guestList = mutableListOf<Guest>()
+    val newAdapter = HotelAdapter(guestList, this)
+
+
+    companion object {
+
+       var guestList = mutableListOf<Guest>()
+
+   }
+
 
     var name: String? = null
     var room: Int = 0
@@ -43,16 +49,13 @@ class DeleteActivity : AppCompatActivity() {
                 price = guest.price
 
                 writeToExternal()
+
+                confirm_textview.setText("${name} is now booked in Room #${room}.")
             }
 
         }
 
-
-
-
     }
-
-
 
     private fun writeToExternal(){
 
@@ -94,10 +97,12 @@ class DeleteActivity : AppCompatActivity() {
         }
         bufferedReader.close()
 
-        val newAdapter = HotelAdapter(guestList)
-            usersNames_listview.adapter = newAdapter
+//            usersNames_listview.adapter = newAdapter
 
 
     }
+    override fun deleteBooking(guestPosition: Int) {
+    }
+
 
 }
