@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils.indexOf
 import android.view.View
+import android.widget.BaseAdapter
 import android.widget.Toast
 import com.example.week3_day3_hotel_list.DeleteActivity.Companion.guestList
+import com.example.week3_day3_hotel_list.MainActivity.Companion.guest
 import kotlinx.android.synthetic.main.activity_list.*
 import kotlinx.android.synthetic.main.list_item_layout.*
 import java.io.BufferedReader
@@ -19,27 +21,31 @@ class ListActivity : AppCompatActivity(), HotelAdapter.GuestAdapterDelegate {
 
     private val filePath = "MyExternalPath"
 
-//    private var guestList = mutableListOf<Guest>()
-//    val newAdapter = HotelAdapter(guestList)
+
+    var name: String? = null
+    var room: Int = 0
+    var price: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
 
+        val intent = getIntent()
 
-        if(userdisplay_listview != null) {
-            readFromExternal()
+        if(intent.extras != null){
+            guest = intent.getParcelableExtra("Guest")
+                name = guest.name
+                room = guest.roomNumber
+                price = guest.price
+
+                writeToExternal()
+
+            }
+        else {
+
+
         }
 
-//       deleteUser_imageView.setOnClickListener(View.OnClickListener {
-
-
-//           DeleteActivity.guestList.removeAt(0)
-//           newAdapter.notifyDataSetChanged()
-//       })
-
-
-//
     }
 
     override fun onResume() {
@@ -47,29 +53,41 @@ class ListActivity : AppCompatActivity(), HotelAdapter.GuestAdapterDelegate {
         readFromExternal()
     }
 
+    private fun writeToExternal(){
+
+        val fileOutputStream = openFileOutput(fileName, Context.MODE_APPEND)
+        val inputString =
+            "\n${name}: #${room}    ${price}"
+        fileOutputStream.write(inputString.toByteArray())
+        Toast.makeText(
+            this,
+            "Room #${room} checked into!",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        readFromExternal()
+    }
+
     private fun readFromExternal(){
-        val actualFile = File(getExternalFilesDir(filePath), fileName)
-        val fileInputStream = actualFile.inputStream()
-        val inputStreamReader = InputStreamReader(fileInputStream)
-        val bufferedReader = BufferedReader(inputStreamReader)
+        val fileInputStream = openFileInput(fileName)
+        val fileInputStreamReader = InputStreamReader(fileInputStream)
+        val bufferedReader = BufferedReader(fileInputStreamReader)
         guestList = mutableListOf()
 
         var inString: String? = null
+        val delimiter = ":"
 
 
         var a = 0
         var b = 0
         while ({ inString = bufferedReader.readLine(); inString }() != null) {
 
-            guestList.add(Guest(inString.toString(), a, b))
-            a++
-            b++
+            guestList.add(Guest(inString.toString(), guest.roomNumber, guest.price))
+
 
         }
-        bufferedReader.close()
         val newAdapter = HotelAdapter(guestList, this)
         userdisplay_listview.adapter = newAdapter
-        newAdapter.notifyDataSetChanged()
 
     }
 
@@ -82,7 +100,7 @@ class ListActivity : AppCompatActivity(), HotelAdapter.GuestAdapterDelegate {
         var fileOutputStream = openFileOutput(fileName, Context.MODE_PRIVATE)
         for (i in 0 until guestList.size) {
             val guestAsString =
-                "${guestList.get(i).name}: #${guestList.get(i).roomNumber} $${guestList.get(i).price}:"
+                "${guestList.get(i).name}\n"
             if (i == 0)
                 fileOutputStream.write(guestAsString.toByteArray())
             else {
@@ -91,6 +109,7 @@ class ListActivity : AppCompatActivity(), HotelAdapter.GuestAdapterDelegate {
             }
         }
         Toast.makeText(this, "Guest checked out!", Toast.LENGTH_SHORT).show()
+        (userdisplay_listview.adapter as BaseAdapter).notifyDataSetChanged()
         readFromExternal()
     }
 }

@@ -18,11 +18,13 @@ class HotelAdapter(private val guestList:List<Guest>, private val delegate: Gues
             .inflate(R.layout.list_item_layout, parent, false)
 
         view.findViewById<TextView>(R.id.guest_info_textView).text = guestList[position].name
+//        view.findViewById<TextView>(R.id.guest_room_textView).text = guestList[position].roomNumber.toString()
+//        view.findViewById<TextView>(R.id.guest_price_textView).text = "$${guestList[position].price}"
+
 
         view.findViewById<ImageView>(R.id.deleteUser_imageView).setOnClickListener{ _ ->
 
             delegate.deleteBooking(position)
-
         }
         return view
     }
